@@ -10,6 +10,10 @@ import times
 from werkzeug.exceptions import HTTPException
 
 
+# NOTE: This is code that probably belongs in submodules at some point.
+# However, since the codebase is so small, we keep everything in here.
+
+
 class JSONDateTimeMixin(object):
     """A mixin for JSONEncoders, encoding :class:`datetime.datetime` and
     :class:`datetime.date` objects by converting them to UNIX timetuples."""
