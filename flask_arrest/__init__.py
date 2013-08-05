@@ -95,7 +95,7 @@ def serialize_response(response_data, content_type=None):
     :param content_type: The Content-type to serialize for. Must be registered
                          on the blueprint, will use :meth:`get_best_mimetype()`
                          if ``None``.
-    :return: A string of the serialized content."""
+    :return: A :class:`~flask.Response` object."""
     content_type = content_type or get_best_mimetype()
 
     if not content_type:

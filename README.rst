@@ -1,3 +1,67 @@
+Example usage
+=============
+
+.. code-block:: python
+
+   from flask import abort, request
+   from flask.ext.arrest import RestBlueprint
+
+   restapi = RestBlueprint('restapi', __name__)  # use like a regular blueprint
+
+   # optional: support custom content-types. otherwise, application/json is the
+   #           default. if no serializer is supplied, will use the default
+   #           serialzer, which is a specialized JSONSerializer.
+   restapi.add_response_type('application/vnd.myapp+json')
+   restapi.add_request_type('application/vnd.myapp+json')
+
+   @restapi.route('/the-menu/')
+   def index():
+     # For the _links-keys, see http://stateless.co/hal_specification.html
+     our_menu = {
+       'beverages': [
+         {
+           'name': 'coffee',
+           'price': 2.00,
+           'description': 'Our house-blend of charcoal and tar, with cream.',
+           '_links': {
+             'order': url_for('.order', id='coffee'),
+             'self': url_for('.detailed_info', id='coffee'),
+           }
+         }, {
+           'name': 'tea',
+           'price': 2.50,
+           'description': 'Made from organic tobacco and maple leafs.',
+           '_links': {
+             'order': url_for('.order', id='tea'),
+             'self': url_for('.detailed_info', id='tea'),
+           },
+         },
+      ]
+    }
+
+    # usually, you may want to populate the menu from a model/database
+    # containing whats on sale
+    return our_menu
+
+  @restapi.route('/coffee-shop/order/<id>/', methods=['POST'])
+  def order(id):
+    if not id in ('coffee', 'tea'):
+      # use regular Flask aborts to return error messages, these will be
+      # serialized to a format the client does accept (in this case, JSON).
+      abort(404, 'We do not serve these things here, sorry.')
+
+    d = request.parsed_data
+    # d now contains the request data, parsed using the parser set above or the
+    # default of the JSON-parser.
+
+    # .. process
+
+    # any dict will automatically be serialized.
+    return some_response
+
+  # omitted: function detailed_info
+
+
 A justification for its existance
 =================================
 Flask-arrest is a simple extension to ease the development of REST-applications.
