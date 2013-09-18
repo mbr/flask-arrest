@@ -12,7 +12,7 @@ def read(fname):
 
 setup(
     name='Flask-arrest',
-    version='0.1dev',
+    version='0.2.dev1',
     description='A small Flask extension to ease the creation of REST apis.',
     long_description=read('README.rst'),
     author='Marc Brinkmann',
