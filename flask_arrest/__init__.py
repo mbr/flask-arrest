@@ -9,7 +9,7 @@ from flask import Blueprint, request, current_app, Response, make_response, \
 import times
 from werkzeug.exceptions import HTTPException
 
-__version__ = '0.2.dev1'
+__version__ = '0.2.dev2'
 
 
 # NOTE: This is code that probably belongs in submodules at some point.
