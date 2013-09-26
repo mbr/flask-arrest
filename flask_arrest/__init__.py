@@ -20,8 +20,10 @@ class JSONDateTimeMixin(object):
     """A mixin for JSONEncoders, encoding :class:`datetime.datetime` and
     :class:`datetime.date` objects by converting them to UNIX timetuples."""
     def default(self, o):
-        if isinstance(o, (datetime.datetime, datetime.date)):
+        if isinstance(o, datetime.datetime):
             return times.format(o, 'Zulu')
+        if isinstance(o, datetime.date):
+            return o.isoformat()
         super(JSONDateTimeMixin, self).default(o)
 
 
