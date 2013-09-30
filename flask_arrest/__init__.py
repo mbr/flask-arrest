@@ -24,7 +24,23 @@ class JSONDateTimeMixin(object):
             return times.format(o, 'Zulu')
         if isinstance(o, datetime.date):
             return o.isoformat()
-        super(JSONDateTimeMixin, self).default(o)
+        return super(JSONDateTimeMixin, self).default(o)
+
+
+class JSONIterableMixin(object):
+    """A mixin for JSONEncoders, encoding any iterable type by converting it to
+    a list.
+
+    Especially useful for SQLAlchemy results that look a lot like regular lists
+    or iterators, but will trip up the encoder."""
+    def default(self, o):
+        try:
+            iterable = iter(o)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return super(JSONIterableMixin, self).default(o)
 
 
 class JSONHTTPErrorMixin(object):
@@ -51,6 +67,7 @@ class JSONHTTPErrorMixin(object):
 
 class RESTJSONEncoder(JSONDateTimeMixin,
                       JSONHTTPErrorMixin,
+                      JSONIterableMixin,
                       json.JSONEncoder, object):
     pass
 
