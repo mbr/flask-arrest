@@ -2,8 +2,7 @@
 
 from functools import wraps
 
-from flask import Blueprint, request, current_app, Response, make_response, \
-    abort
+from flask import Blueprint, request, current_app, make_response, abort
 from werkzeug.exceptions import HTTPException
 
 from .encoding import json_enc, json_dec
@@ -69,37 +68,6 @@ def serialize_response(response_data, content_type=None):
     return response
 
 
-class RestMixin(ContentNegotiationMixin):
-    """A REST Blueprint.
-
-    Deriving from :class:`ContentNegotiatingBlueprint`, any route is decorated
-    with an extra function causing all returns values to be run through
-    :func:`serialize_response`, unless they are already an instance of
-    :class:`flask.Response`.
-
-    Any :class:`~werkzeug.exceptions.HTTPException` will be serialized as well,
-    other exceptions will be passed through unchanged (triggering 500 errors
-    or the debugger, depending on whether ``DEBUG`` is enabled)."""
-
-    def route(self, *rargs, **rkwargs):
-        def wrapper(f):
-            @wraps(f)
-            def _(*fargs, **fkwargs):
-                rv = f(*fargs, **fkwargs)
-
-                if isinstance(rv, Response):
-                    # keep unchanged if already instance of Response
-                    return rv
-
-                # return serialized response
-                return serialize_response(rv)
-
-            # wrapped in original route function
-            return super(RestMixin, self).route(*rargs, **rkwargs)(_)
-
-        return wrapper
-
-
 def parse_request_data():
     if not request.headers.get('Content-type', None):
         if request.data:
@@ -136,7 +104,14 @@ class DeserializingMixin(object):
         self.request_mimetypes[mimetype] = deserializer
 
 
-class RestBlueprint(DeserializingMixin, RestMixin, Blueprint):
+class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
+    """A REST Blueprint.
+
+    Deriving from :class:`ContentNegotiatingBlueprint`, all HTTPExcptions
+    thrown are handled by the :func:`~RestMixin.rest_http_exceptionhandler`
+    exception handler. The default implementation renders the exceptions into a
+    format suitable for the client, while passing on the code unchanged."""
+
     def __init__(self, *args, **kwargs):
         super(RestBlueprint, self).__init__(*args, **kwargs)
         self.before_request(parse_request_data)
