@@ -145,6 +145,19 @@ class RestBlueprint(DeserializingMixin, RestMixin, Blueprint):
         self.before_request(parse_request_data)
         self.response_mimetypes = {}
 
+    def http_errorhandlers(self, f):
+        # there's an issue and a pull request for this at
+        # https://github.com/mitsuhiko/flask/pull/952
+        # for now, this is a workaround
+
+        for i in range(0, 600):
+            if i != 500:
+                # AssertionError: It is currently not possible to register a
+                # 500 internal server error on a per-blueprint level.
+                self.errorhandler(i)(f)
+
+        return f
+
 
 # restricting decorators
 def accepts(*args):
