@@ -41,7 +41,7 @@ Example usage
 
     # usually, you may want to populate the menu from a model/database
     # containing whats on sale
-    return our_menu
+    return serialize_response(our_menu)
 
   @restapi.route('/coffee-shop/order/<id>/', methods=['POST'])
   def order(id):
@@ -56,8 +56,7 @@ Example usage
 
     # .. process
 
-    # any dict will automatically be serialized.
-    return some_response
+    return serialize_response(some_response)
 
   # omitted: function detailed_info
 
