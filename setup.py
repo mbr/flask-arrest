@@ -21,4 +21,5 @@ setup(
     license='MIT',
     packages=find_packages(exclude=['test']),
     install_requires=['Flask', 'werkzeug', 'times'],
+    tests_require=['pytest'],
 )

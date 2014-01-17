@@ -54,7 +54,7 @@ def serialize_response(response_data, content_type=None):
     content_type = content_type or get_best_mimetype()
 
     if not content_type:
-        abort(406)
+        return serialize_response(HTTPError(406))
 
     rv = current_app.blueprints[request.blueprint]\
         .response_mimetypes[content_type](response_data)
@@ -118,6 +118,30 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
         self.response_mimetypes = {}
 
         self.http_errorhandlers(self.__serializing_errorhandler)
+        self.accepted_mimetypes = {
+            None: set(['application/json']),  # defaults for most common use
+                                              # cases
+        }
+
+    def set_accepted_mimetypes(self, mimes, endpoint=None):
+        if endpoint is None and None in mimes:
+            raise ValueError('Cannot use None-value on default.')
+        self.accepted_mimetypes[endpoint] = set(mimes)
+
+    def add_accepted_mimetype(self, mime, endpoint=None):
+        if endpoint is None and mime is None:
+            raise ValueError('Cannot add None-value to default.')
+        self.accepted_mimetypes.setdefault(endpoint, set([None])).add(mime)
+
+    def get_accepted_mimetypes(self, endpoint=None):
+        mimetypes = set(self.accepted_mimetypes.get(endpoint, set([None])))
+        if None in mimetypes:
+            mimetypes.remove(None)
+
+            # add default types
+            mimetypes.update(self.accepted_mimetypes[None])
+        return mimetypes
+
 
     def http_errorhandlers(self, f):
         # there's an issue and a pull request for this at
@@ -131,6 +155,7 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
                 self.errorhandler(i)(f)
 
         return f
+
 
     def __serializing_errorhandler(self, error):
         return serialize_response(error)
