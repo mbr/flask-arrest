@@ -85,10 +85,7 @@ class RestMixin(ContentNegotiationMixin):
         def wrapper(f):
             @wraps(f)
             def _(*fargs, **fkwargs):
-                try:
-                    rv = f(*fargs, **fkwargs)
-                except HTTPException as e:
-                    rv = e
+                rv = f(*fargs, **fkwargs)
 
                 if isinstance(rv, Response):
                     # keep unchanged if already instance of Response
@@ -145,6 +142,8 @@ class RestBlueprint(DeserializingMixin, RestMixin, Blueprint):
         self.before_request(parse_request_data)
         self.response_mimetypes = {}
 
+        self.http_errorhandlers(self.__serializing_errorhandler)
+
     def http_errorhandlers(self, f):
         # there's an issue and a pull request for this at
         # https://github.com/mitsuhiko/flask/pull/952
@@ -157,6 +156,9 @@ class RestBlueprint(DeserializingMixin, RestMixin, Blueprint):
                 self.errorhandler(i)(f)
 
         return f
+
+    def __serializing_errorhandler(self, error):
+        return serialize_response(error)
 
 
 # restricting decorators
