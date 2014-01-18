@@ -71,7 +71,7 @@ def serialize_response(response_data, content_type=None):
     content_type = content_type or get_best_mimetype()
 
     if not content_type:
-        return serialize_response(HTTPError(406))
+        return HTTPException(406)
 
     rv = current_app.blueprints[request.blueprint]\
         .response_mimetypes[content_type](response_data)
@@ -159,23 +159,21 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
             mimetypes.update(self.accepted_mimetypes[None])
         return mimetypes
 
-
     def http_errorhandlers(self, f):
         # there's an issue and a pull request for this at
         # https://github.com/mitsuhiko/flask/pull/952
         # for now, this is a workaround
+        # ideally, we would just myblueprint.errorhandler(HTTPException)(f)
 
         for i in range(0, 600):
             if i != 500:
                 # AssertionError: It is currently not possible to register a
                 # 500 internal server error on a per-blueprint level.
                 self.errorhandler(i)(f)
-
         return f
 
-
     def __serializing_errorhandler(self, error):
-        return serialize_response(error)
+        return serialize_response(error), getattr(error, 'code', 500)
 
 
 # restricting decorators
