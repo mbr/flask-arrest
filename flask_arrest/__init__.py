@@ -21,12 +21,29 @@ class ContentNegotiationMixin(object):
     If no encoder mapping is supplied using ``response_mimetypes``, a single
     mapping is used, mapping ``application/json`` to an instance of
     ``RESTJSONEncoder``."""
+
+    def __init__(self, *args, **kwargs):
+        super(ContentNegotiationMixin, self).__init__(*args, **kwargs)
+        self.before_request(self.__check_incoming_content_type)
+
     def add_response_type(self, mimetype, serializer='json'):
         if serializer == 'json':
             serializer = json_enc.encode
         if not hasattr(self, 'response_mimetypes'):
             self.response_mimetypes = {}
         self.response_mimetypes[mimetype] = serializer
+
+    def __check_incoming_content_type(self):
+        if not request.content_type and (request.data or request.form):
+            abort(415)  # client needs to send a content-type, if he sends
+                        # content
+
+        if not request.content_type and not (request.data or request.form):
+            return  # no content, no problem
+
+        accepted = self.get_accepted_mimetypes(request.endpoint)
+        if not request.content_type in accepted:
+            abort(415)
 
 
 def get_best_mimetype():
