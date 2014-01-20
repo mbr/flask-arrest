@@ -3,8 +3,11 @@
 from functools import wraps
 
 from flask import Blueprint, request, current_app, make_response, abort
+from flask.helpers import locked_cached_property
+from jinja2 import PackageLoader, ChoiceLoader, Environment
 from werkzeug.exceptions import HTTPException
 
+from . import exceptionrenderers
 from .encoding import json_enc, json_dec
 
 __version__ = '0.3.dev2'
@@ -131,14 +134,37 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
 
     def __init__(self, *args, **kwargs):
         super(RestBlueprint, self).__init__(*args, **kwargs)
-        self.before_request(parse_request_data)
-        self.response_mimetypes = {}
+        self.fallback_content_type = 'text/html'
 
         self.http_errorhandlers(self.__serializing_errorhandler)
+        # some default renderers
+        self.http_errorrenderers = {
+            'text/plain': exceptionrenderers.text_plain,
+            'text/html': exceptionrenderers.text_html,
+        }
         self.accepted_mimetypes = {
             None: set(['application/json']),  # defaults for most common use
                                               # cases
         }
+
+    @locked_cached_property
+    def _exception_jinja_loader(self):
+        # we override this so we can add our own template path as well as the
+        # the one of any deriving blueprint
+        #
+        # templates are stored in flask_arrest/templates
+        # FIXME: this needs to be an env
+        exc_loader = PackageLoader('flask_arrest')
+        if not self.jinja_loader:
+            return exc_loader
+
+        return ChoiceLoader([self.jinja_loader, exc_loader])
+
+    @locked_cached_property
+    def exception_jinja_env(self):
+        env = Environment(loader=self._exception_jinja_loader)
+
+        return env
 
     def set_accepted_mimetypes(self, mimes, endpoint=None):
         if endpoint is None and None in mimes:
@@ -173,7 +199,18 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
         return f
 
     def __serializing_errorhandler(self, error):
-        return serialize_response(error), getattr(error, 'code', 500)
+        content_type = request.accept_mimetypes.best_match(
+            self.http_errorrenderers.keys(),
+        )
+
+        if not content_type:
+            # we found no acceptable content-type to render the exception
+            # return nothing but the code
+
+            code = getattr(error, 'code', 500)
+            return '', code
+
+        return self.http_errorrenderers[content_type](error)
 
 
 # restricting decorators
