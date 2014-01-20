@@ -1,11 +1,10 @@
-TEXT_PLAIN_ENCODING = 'utf8'
+import json
 
 from flask import current_app
 
 from .helpers import render_exception_template
 
-# FIXME: to support problem+json, we probably need to define
-#        our own exception class
+TEXT_PLAIN_ENCODING = 'utf8'
 
 
 def text_plain(exc):
@@ -20,4 +19,20 @@ def text_html(exc):
                                       'exception.html')
     html = render_exception_template(tpl_name, exc=exc)
 
-    return html, exc.code, {'Content-type': 'text/html'}
+    return html, exc.code, {'Content-type': 'text/html; charset=utf8'}
+
+
+def application_problem_json(exc):
+    # FIXME: to support problem+json properly, we probably need to define
+    #        our own exception class?
+
+    data = {
+        'type': ('https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#%d'
+                 % exc.code),
+        'title': exc.name,
+        'status': exc.code,
+        'detail': exc.description,
+    }
+
+    return json.dumps(data), exc.code, {'Content-type':
+                                        'application/problem+json'}

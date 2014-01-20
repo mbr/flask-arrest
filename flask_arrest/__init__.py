@@ -140,6 +140,9 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
         self.http_errorrenderers = {
             'text/plain': exceptionrenderers.text_plain,
             'text/html': exceptionrenderers.text_html,
+            'application/json': exceptionrenderers.application_problem_json,
+            'application/problem+json':
+            exceptionrenderers.application_problem_json,
         }
         self.accepted_mimetypes = {
             None: set(['application/json']),  # defaults for most common use
