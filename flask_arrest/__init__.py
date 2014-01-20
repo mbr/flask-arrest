@@ -63,7 +63,7 @@ def serialize_response(response_data, content_type=None, renderer=None):
 
     if not content_type:
         # no accepted content-type. send flasks default 406, instead of raising
-        return HTTPException(406)
+        return NotAcceptable()
 
     if not renderer:
         renderer = current_blueprint.default_renderer
