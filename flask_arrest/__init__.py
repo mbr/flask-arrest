@@ -65,6 +65,7 @@ def serialize_response(response_data, content_type=None):
     content_type = content_type or get_best_mimetype()
 
     if not content_type:
+        # note: this should not happen, as a 406 would've been sent before
         return HTTPException(406)
 
     rv = current_app.blueprints[request.blueprint]\
@@ -77,15 +78,6 @@ def serialize_response(response_data, content_type=None):
 
     response.headers['Content-type'] = content_type
     return response
-
-
-class DeserializingMixin(object):
-    def add_request_type(self, mimetype, deserializer='json'):
-        if deserializer == 'json':
-            deserializer = json_dec.decode
-        if not hasattr(self, 'request_mimetypes'):
-            self.request_mimetypes = {}
-        self.request_mimetypes[mimetype] = deserializer
 
 
 class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
