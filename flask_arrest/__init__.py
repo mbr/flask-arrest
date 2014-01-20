@@ -177,26 +177,3 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
             return '', code
 
         return self.http_errorrenderers[content_type](error)
-
-
-# restricting decorators
-def accepts(*args):
-    def wrapper(f):
-        @wraps(f)
-        def _(*args, **kwargs):
-            if not request.mimetype in args:
-                abort(415, 'Request must be one of the following mimetypes: %s'
-                           % ','.join(args))
-            return f(*args, **kwargs)
-    return wrapper
-
-
-def produces(*args):
-    def wrapper(f):
-        @wraps(f)
-        def _(*args, **kwargs):
-            for mimetype in args:
-                if mimetype in request.accept_mimetypes:
-                    return f(*args, **kwargs)
-            abort(406)
-    return wrapper
