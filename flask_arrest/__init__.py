@@ -88,33 +88,6 @@ def serialize_response(response_data, content_type=None):
     return response
 
 
-def parse_request_data():
-    if not request.headers.get('Content-type', None):
-        if request.data:
-            abort(415, 'No Content-type specified for request body.')
-
-        # no content type
-        request.parsed_data = None
-        return
-
-    content_type = request.headers['Content-type']
-    blueprint = current_app.blueprints[request.blueprint]
-    if not content_type in blueprint.request_mimetypes:
-        abort(415, 'Request data must be of the following mimetypes: %s' %
-                   ', '.join(sorted(blueprint.request_mimetypes.keys())))
-
-    if not request.data:
-        abort(400, 'Valid content-type given, but missing data.')
-
-    # we've got a valid, supported mimetype, parse it
-    try:
-        request.parsed_data = blueprint.request_mimetypes[content_type](
-            request.data
-        )
-    except Exception:
-        abort(400, 'Error deserializing content.')
-
-
 class DeserializingMixin(object):
     def add_request_type(self, mimetype, deserializer='json'):
         if deserializer == 'json':
