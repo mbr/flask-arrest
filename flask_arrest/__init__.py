@@ -114,7 +114,6 @@ class RestBlueprint(ContentNegotiationMixin, Blueprint):
 
         return env
 
-
     def http_errorhandlers(self, f):
         # there's an issue and a pull request for this at
         # https://github.com/mitsuhiko/flask/pull/952

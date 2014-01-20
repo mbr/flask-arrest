@@ -20,7 +20,6 @@ def api(app):
         return ''
 
     api.incoming.set_mimetypes(['application/foo'])
-
     app.register_blueprint(api)
 
     return api
