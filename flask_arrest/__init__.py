@@ -134,7 +134,6 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
 
     def __init__(self, *args, **kwargs):
         super(RestBlueprint, self).__init__(*args, **kwargs)
-        self.fallback_content_type = 'text/html'
 
         self.http_errorhandlers(self.__serializing_errorhandler)
         # some default renderers
