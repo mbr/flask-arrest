@@ -53,10 +53,10 @@ class MIMEMap(object):
 
     def get_mimetypes(self, endpoint=None):
         """Get all mimetypes for an endpoint."""
-        mimetypes = self._map[endpoint]
+        mimetypes = set(self._map[endpoint])
 
         if None in mimetypes:
-            mimetypes.remove(None)
             mimetypes.update(self._map[None])
+            mimetypes.remove(None)
 
         return mimetypes

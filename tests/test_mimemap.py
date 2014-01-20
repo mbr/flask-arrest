@@ -9,13 +9,13 @@ def m():
 
 
 def test_empty_map(m):
-    assert m.get_mimetypes('foo') == set([None])
-    assert m.get_mimetypes('bar') == set([None])
+    assert m.get_mimetypes('foo') == set([])
+    assert m.get_mimetypes('bar') == set([])
 
 
 def test_adding_mimetype(m):
     m.add_mimetype('app/foo', 'bar')
-    assert m.get_mimetypes('bar') == set([None, 'app/foo'])
+    assert m.get_mimetypes('bar') == set(['app/foo'])
 
 
 def test_setting_mimetypes(m):
@@ -38,3 +38,11 @@ def test_adding_none_to_none(m):
 def test_setting_none_to_none(m):
     with pytest.raises(ValueError):
         m.set_mimetypes(['a', 'b', None])
+
+
+def test_mimetypes_is_copy(m):
+    m.set_mimetypes(['a', 'b'])
+    ms = m.get_mimetypes()
+    ms.add('c')
+
+    assert m.get_mimetypes() == set(['a', 'b'])
