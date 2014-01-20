@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 
-from functools import wraps
-
-from flask import Blueprint, request, current_app, make_response, abort
+from flask import Blueprint, request, abort
 from flask.helpers import locked_cached_property
 from jinja2 import PackageLoader, ChoiceLoader, Environment
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import NotAcceptable
 
 from .helpers import get_best_mimetype, current_blueprint, MIMEMap
 from . import exceptionrenderers, renderers
-from .encoding import json_enc, json_dec
 
 __version__ = '0.3.dev2'
 
