@@ -11,51 +11,51 @@ def apibp():
 
 
 def test_default_is_json(apibp):
-    assert apibp.get_accepted_mimetypes() == set(['application/json'])
+    assert apibp.incoming.get_mimetypes() == set(['application/json'])
 
 
 def test_default_for_arbitrary_endpoint_is_json(apibp):
-    assert apibp.get_accepted_mimetypes('some-endpoint') ==\
+    assert apibp.incoming.get_mimetypes('some-endpoint') ==\
         set(['application/json'])
 
 
 def test_setting_default_mimetypes(apibp):
-    apibp.set_accepted_mimetypes(['application/x', 'application/y'])
+    apibp.incoming.set_mimetypes(['application/x', 'application/y'])
 
-    assert apibp.get_accepted_mimetypes() ==\
+    assert apibp.incoming.get_mimetypes() ==\
         set(['application/x', 'application/y'])
 
 
 def test_add_default_mimetypes(apibp):
-    apibp.add_accepted_mimetype('application/new')
+    apibp.incoming.add_mimetype('application/new')
 
-    assert apibp.get_accepted_mimetypes() ==\
+    assert apibp.incoming.get_mimetypes() ==\
         set(['application/json', 'application/new'])
 
 
 def test_arbitrary_endpoint_mimetype_default(apibp):
-    assert apibp.get_accepted_mimetypes('some_nonexisting_endpoint') ==\
+    assert apibp.incoming.get_mimetypes('some_nonexisting_endpoint') ==\
         set(['application/json'])
 
 
 def test_adding_to_endpoint(apibp):
-    apibp.add_accepted_mimetype('application/z', 'endpointx')
+    apibp.incoming.add_mimetype('application/z', 'endpointx')
 
-    assert apibp.get_accepted_mimetypes('endpointx') ==\
+    assert apibp.incoming.get_mimetypes('endpointx') ==\
         set(['application/json', 'application/z'])
 
 
 def test_disabling_default_acceptance(apibp):
-    apibp.set_accepted_mimetypes(['application/only'], 'endpointy')
+    apibp.incoming.set_mimetypes(['application/only'], 'endpointy')
 
-    assert apibp.get_accepted_mimetypes('endpointy') ==\
+    assert apibp.incoming.get_mimetypes('endpointy') ==\
         set(['application/only'])
 
 
 def test_adding_none_allowed_for_endpoints(apibp):
-    apibp.add_accepted_mimetype(None, 'endpoint')
+    apibp.incoming.add_mimetype(None, 'endpoint')
 
 
 def test_adding_none_not_allow_for_root(apibp):
     with pytest.raises(ValueError):
-        apibp.add_accepted_mimetype(None)
+        apibp.incoming.add_mimetype(None)

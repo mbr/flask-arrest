@@ -19,7 +19,7 @@ def api(app):
     def accepts_foo():
         return ''
 
-    api.set_accepted_mimetypes(['application/foo'])
+    api.incoming.set_mimetypes(['application/foo'])
 
     app.register_blueprint(api)
 

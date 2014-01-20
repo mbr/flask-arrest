@@ -7,7 +7,8 @@ from flask.helpers import locked_cached_property
 from jinja2 import PackageLoader, ChoiceLoader, Environment
 from werkzeug.exceptions import HTTPException
 
-from . import exceptionrenderers
+from .helpers import get_best_mimetype, current_blueprint, MIMEMap
+from . import exceptionrenderers, renderers
 from .encoding import json_enc, json_dec
 
 __version__ = '0.3.dev2'
@@ -29,12 +30,11 @@ class ContentNegotiationMixin(object):
         super(ContentNegotiationMixin, self).__init__(*args, **kwargs)
         self.before_request(self.__check_incoming_content_type)
 
-    def add_response_type(self, mimetype, serializer='json'):
-        if serializer == 'json':
-            serializer = json_enc.encode
-        if not hasattr(self, 'response_mimetypes'):
-            self.response_mimetypes = {}
-        self.response_mimetypes[mimetype] = serializer
+        self.incoming = MIMEMap()
+        self.incoming.add_mimetype('application/json')
+
+        self.outgoing = MIMEMap()
+        self.outgoing.add_mimetype('application/json')
 
     def __check_incoming_content_type(self):
         if not request.content_type and (request.data or request.form):
@@ -44,12 +44,12 @@ class ContentNegotiationMixin(object):
         if not request.content_type and not (request.data or request.form):
             return  # no content, no problem
 
-        accepted = self.get_accepted_mimetypes(request.endpoint)
+        accepted = self.incoming.get_mimetypes(request.endpoint)
         if not request.content_type in accepted:
             abort(415)
 
 
-def serialize_response(response_data, content_type=None):
+def serialize_response(response_data, content_type=None, renderer=None):
     """Serializes a response using a specified serializer.
 
     If ``response_data`` is an instance of
@@ -65,22 +65,15 @@ def serialize_response(response_data, content_type=None):
     content_type = content_type or get_best_mimetype()
 
     if not content_type:
-        # note: this should not happen, as a 406 would've been sent before
+        # no accepted content-type. send flasks default 406, instead of raising
         return HTTPException(406)
 
-    rv = current_app.blueprints[request.blueprint]\
-        .response_mimetypes[content_type](response_data)
-
-    response = make_response(rv)
-
-    if isinstance(response_data, HTTPException):
-        response.status_code = response_data.code
-
-    response.headers['Content-type'] = content_type
-    return response
+    if not renderer:
+        renderer = current_blueprint.default_renderer
+    return renderer.render_response(response_data, content_type)
 
 
-class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
+class RestBlueprint(ContentNegotiationMixin, Blueprint):
     """A REST Blueprint.
 
     Deriving from :class:`ContentNegotiatingBlueprint`, all HTTPExcptions
@@ -124,24 +117,6 @@ class RestBlueprint(ContentNegotiationMixin, DeserializingMixin, Blueprint):
 
         return env
 
-    def set_accepted_mimetypes(self, mimes, endpoint=None):
-        if endpoint is None and None in mimes:
-            raise ValueError('Cannot use None-value on default.')
-        self.accepted_mimetypes[endpoint] = set(mimes)
-
-    def add_accepted_mimetype(self, mime, endpoint=None):
-        if endpoint is None and mime is None:
-            raise ValueError('Cannot add None-value to default.')
-        self.accepted_mimetypes.setdefault(endpoint, set([None])).add(mime)
-
-    def get_accepted_mimetypes(self, endpoint=None):
-        mimetypes = set(self.accepted_mimetypes.get(endpoint, set([None])))
-        if None in mimetypes:
-            mimetypes.remove(None)
-
-            # add default types
-            mimetypes.update(self.accepted_mimetypes[None])
-        return mimetypes
 
     def http_errorhandlers(self, f):
         # there's an issue and a pull request for this at
