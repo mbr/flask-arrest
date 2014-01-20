@@ -49,15 +49,6 @@ class ContentNegotiationMixin(object):
             abort(415)
 
 
-def get_best_mimetype():
-    """Returns the highest quality mimetype-string that client and server can
-    agree on. Returns ``None``, if no suitable type is found."""
-    # find out what the client accepts
-    return request.accept_mimetypes.best_match(
-        current_app.blueprints[request.blueprint].response_mimetypes.keys()
-    )
-
-
 def serialize_response(response_data, content_type=None):
     """Serializes a response using a specified serializer.
 
