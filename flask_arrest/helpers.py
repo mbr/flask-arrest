@@ -11,7 +11,11 @@ current_blueprint = LocalProxy(
 
 def get_best_mimetype():
     """Returns the highest quality server-to-client content-type that both
-    agree on. Returns ``None``, if no suitable type is found."""
+    agree on. Returns ``None``, if no suitable type is found.
+
+    Internally, works by querying the blueprint for its
+    :attr:`~flask_arrest.Blueprint.outgoing` attribute and comparing it with
+    the ``Accept``-headers sent by the client.."""
     # find out what the client accepts
     return request.accept_mimetypes.best_match(
         current_blueprint.outgoing.get_mimetypes(request.endpoint)
