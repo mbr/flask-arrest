@@ -82,6 +82,12 @@ def serialize_response(response_data, content_type=None, renderer=None):
 
 
 class AbsoluteJinjaEnvMixin(object):
+    """Jinja environment helper mixin.
+
+    Creates a separate jinja_env for temlates that come bundled with a
+    blueprint (when deriving from a blueprint, normally the template_path will
+    be overridden).
+    """
     @locked_cached_property
     def _absolute_jinja_loader(self):
         # we override this so we can add our own template path as well as the
@@ -104,8 +110,12 @@ class AbsoluteJinjaEnvMixin(object):
 class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin, Blueprint):
     """A REST Blueprint.
 
-    Deriving from :class:`ContentNegotiatingBlueprint`, all HTTPExcptions
-    thrown are rendered by the :func:`~RestBlueprint.exception_renderer`."""
+    Will register an errorhandler for all
+    :class:`~werkzeug.exceptions.HTTPException`s thrown, which are rendered
+    using the :attr:`~flask_arrest.RestBlueprint.exception_renderer`.
+
+    It also provides a default renderer for other facilities with
+    :attr:`~flask_arrest.RestBlueprint.content_renderer`."""
 
     def __init__(self, *args, **kwargs):
         super(RestBlueprint, self).__init__(*args, **kwargs)
