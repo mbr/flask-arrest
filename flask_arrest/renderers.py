@@ -5,19 +5,41 @@ TEXT_PLAIN_ENCODING = 'utf8'
 
 
 class Renderer(object):
+    """Basic Renderer interface.
+
+    A Renderer can be asked to render an unspecified piece of data into a
+    response."""
     def render_response(self, data, content_type):
+        """Render data.
+
+        :param data: The data to be rendered.
+        :param content_type: A string describing the desired output
+        content-type.
+        :return: A tuple containing a :class:`~flask.Response` instance."""
         raise NotImplementedError
 
 
 class PluggableRenderer(Renderer):
+    """PluggableRenderers support rendering content by registering rendering
+    functions for each content type.
+
+    Any renderer will be called with arguments matching ``data, content_type``,
+    where ``data`` is the object to be rendered and ``content_type`` the
+    desired content-type as a string. The return value is passed as arguments
+    into :meth:`~flask.make_response`.
+    """
     def __init__(self, *args, **kwargs):
         super(PluggableRenderer, self).__init__(*args, **kwargs)
         self.content_funcs = {}
 
     def register_renderer(self, content_type, func):
+        """Set renderer for ``content_type`` to func."""
         self.content_funcs[content_type] = func
 
     def renders(self, content_type):
+        """A function decorator. Decorating a function with this is equivalent
+        to calling ``register_renderer(content_type, this_function)``.
+        """
         def _(f):
             self.register_renderer(content_type, f)
             return f
