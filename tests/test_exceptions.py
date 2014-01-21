@@ -21,6 +21,8 @@ def api(app):
     def accepts_foo(code):
         abort(code)
 
+    api.outgoing.set_mimetypes(['text/html', 'text/plain', 'application/json'])
+
     app.register_blueprint(api)
 
     return api
