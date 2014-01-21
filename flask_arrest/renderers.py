@@ -40,6 +40,8 @@ exception_renderer = PluggableRenderer()
 import json
 from pprint import pformat
 
+from flask_arrest.helpers import current_blueprint
+
 
 @content_renderer.renders('application/json')
 def render_json_content(data, content_type):
@@ -63,7 +65,8 @@ def render_text_plain_exception(exc, content_type):
 def text_html(exc, content_type):
     tpl_name = current_app.config.get('EXCEPTION_TEMPLATE_TEXT_HTML',
                                       'exception.html')
-    html = render_exception_template(tpl_name, exc=exc)
+    tpl = current_blueprint.absolute_jinja_env.get_or_select_template(tpl_name)
+    html = tpl.render(exc=exc)
 
     return html, exc.code, {'Content-type': 'text/html; charset=utf8'}
 
@@ -71,9 +74,6 @@ def text_html(exc, content_type):
 @exception_renderer.renders('application/problem+json')
 @exception_renderer.renders('application/json')
 def application_problem_json(exc, content_type):
-    # FIXME: to support problem+json properly, we probably need to define
-    #        our own exception class?
-
     data = {
         'type': ('https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#%d'
                  % exc.code),

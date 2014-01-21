@@ -9,13 +9,6 @@ current_blueprint = LocalProxy(
 )
 
 
-def render_exception_template(template_name_or_list, **context):
-    tpl = current_blueprint.exception_jinja_env.get_or_select_template(
-        template_name_or_list
-    )
-    return tpl.render(context)
-
-
 def get_best_mimetype():
     """Returns the highest quality server-to-client content-type that both
     agree on. Returns ``None``, if no suitable type is found."""
