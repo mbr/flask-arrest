@@ -1,7 +1,29 @@
 Example usage
 =============
 
-currently to be written.
+Unfortunately, while the internal docs are up-to-date, not a lot of examples
+have been written. The following is minimal code to get it running, but does not
+show of any of the features of Flask-Arrest.
+
+.. code-block:: python
+
+   from flask_arrest import RestBlueprint, serialize_response
+
+   frontend = RestBlueprint('frontend', __name__)
+
+   @frontend.route('/greet/<name>/')
+   def greet(name):
+       return serialize_response({
+           'name': name,
+           'greeting': 'Hello, {0}'.format(name),
+       })
+
+   from flask import Flask
+
+   app = Flask(__name__)
+   app.register_blueprint(frontend)
+
+   app.run(debug=True)
 
 
 A justification for its existance
