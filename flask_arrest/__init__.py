@@ -13,15 +13,25 @@ __version__ = '0.3.dev2'
 
 class ContentNegotiationMixin(object):
     """A blueprint mixin that supports content negotiation. Used in conjunction
-    with the :func:`get_best_mimetype()` and :func:`serializer_response()`
+    with the :func:`get_best_mimetype()` and :func:`serialize_response()`
     functions.
 
-    A mimetype is a string describing a mime(Content-)type, serializers are
-    callables that convert a single argument into a string representation.
+    Each blueprint with this mixed in has an :attr:`incoming` and
+    :attr:`outgoing attribute, both of which are instances of
+    :class:`~flask_arrest.helpers.MIMEType` instances.
 
-    If no encoder mapping is supplied using ``response_mimetypes``, a single
-    mapping is used, mapping ``application/json`` to an instance of
-    ``RESTJSONEncoder``."""
+    :attr:`incoming` types are checked whenever a client sends a request with
+    content to this blueprint (for example, with a ``POST`` request). If the
+    supplied ``Content-type``-Header is not among the MIME-Types found in
+    :attr:`incoming` for this specific endpoint, the request is rejected with a
+    HTTP 415 (Unsupported Media Type) error.
+
+    :attr:`outgoing` types supply information about which possible
+    ``Content-type``s can be sent back to the client. Renderers for data can
+    use these to find an intersection with the ``Accept``-headers the client
+    sent. Many will send an HTTP 406 (Not Acceptable) error if none of the
+    advertised types is found in the clients ``Accept``-header.
+    """
 
     def __init__(self, *args, **kwargs):
         super(ContentNegotiationMixin, self).__init__(*args, **kwargs)
@@ -47,17 +57,18 @@ class ContentNegotiationMixin(object):
 
 
 def serialize_response(response_data, content_type=None, renderer=None):
-    """Serializes a response using a specified serializer.
+    """Serializes a response using a specified renderer.
 
-    If ``response_data`` is an instance of
-    :class:`~werkzeug.exceptions.HTTPException`, the status code of the
-    response will be set accordingly.
+    This will serialize ``response_data`` with the client's preferred
+    ``Content-type`` or generate a HTTP 406 (Not Acceptable) if no match can be
+    made.
 
     :param response_data: Data to be serialized. Can be anything the serializer
                           can handle.
-    :param content_type: The Content-type to serialize for. Must be registered
-                         on the blueprint, will use :meth:`get_best_mimetype()`
-                         if ``None``.
+    :param content_type: The ``Content-type`` to serialize for.
+    :param renderer: The renderer to use. If ``None``, lookup the current
+                     blueprint's
+                     :attr:`~flask_arrest.RestBlueprint.content_renderer`.
     :return: A :class:`~flask.Response` object."""
     content_type = content_type or get_best_mimetype()
 
