@@ -1,6 +1,7 @@
 from flask import request
 from flask.views import View
 import werkzeug
+from werkzeug.exceptions import NotFound
 
 from . import serialize_response
 from .helpers import register_converter
@@ -31,6 +32,28 @@ class ResourceView(View):
         else:
             # no VIEW_DELIM in endpoint name, default to show
             return 'show'
+
+
+class HandlerMixin(object):
+    uris = {
+        'show': (['GET'], '/{0.singular}/<{0.singular}:obj_id>/',
+                 '{0.singular}'),
+        'create': (['POST'], '/{0.plural}/'),
+        'update': (['PATCH'], '/{0.singular}/<{0.singular}:obj_id>/'),
+        'replace': (['PUT'], '/{0.singular}/<{0.singular}:obj_id>/'),
+        'remove': (['DELETE'], '/{0.singular}/<{0.singular}:obj_id>/'),
+        'query': (['GET'], '/{0.plural}/'),
+    }
+
+    def _obj_to_id(self, obj):
+        return str(obj.id)
+
+    def show(self, obj_id):
+        try:
+            obj = self._from_id(obj_id)
+        except (ValueError, KeyError):
+            raise NotFound()
+        return obj
 
 
 def mount_resource(app_or_blueprint, handler):
