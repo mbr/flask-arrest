@@ -26,6 +26,25 @@ def api(app):
 
 
 @pytest.fixture
+def simple_api(app):
+    api = RestBlueprint('api', __name__)
+    app.testing = True
+
+    @api.route('/', methods=['POST'])
+    def index():
+        return 'OK'
+
+    app.register_blueprint(api)
+
+    return api
+
+
+@pytest.fixture
+def simple_client(app, simple_api):
+    return app.test_client()
+
+
+@pytest.fixture
 # init api to complete the app!
 def client(app, api):
     return app.test_client()
@@ -52,3 +71,10 @@ def test_get_incoming_type_with_empty_bodies(client):
     assert client.get('/accepts-foo/',
                       headers={'Content-Type': 'application/foo'}
                       ).status_code == 200
+
+
+# simple client
+def test_application_json_default(simple_client):
+    assert simple_client.post('/',
+                              headers={'Content-Type': 'application/json'}
+                              ).status_code == 200
