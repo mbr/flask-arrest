@@ -9,6 +9,23 @@ current_blueprint = LocalProxy(
 )
 
 
+def register_converter(app_or_blueprint, name, converter):
+    """Registers a converter on a url_map of an app or adds it to a blueprint.
+    """
+
+    # the following is a helper to register a converter through a blueprint
+    def _register_converter(app):
+        app.url_map.converters[name] = converter
+
+    # attach directly if called on app, through blueprint otherwise
+    if hasattr(app_or_blueprint, 'url_map'):
+        _register_converter(app_or_blueprint)
+    else:
+        app_or_blueprint.record_once(
+            lambda state: _register_converter(state.app)
+        )
+
+
 def get_best_mimetype():
     """Returns the highest quality server-to-client content-type that both
     agree on. Returns ``None``, if no suitable type is found.
