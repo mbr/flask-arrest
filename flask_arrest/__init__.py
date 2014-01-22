@@ -115,6 +115,10 @@ class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin, Blueprint):
     using the :attr:`~flask_arrest.RestBlueprint.exception_renderer`.
 
     It also provides a default renderer for other facilities with
+    :attr:`~flask_arrest.RestBlueprint.content_renderer`.
+
+    Finally, everytime a view turns an object that is not an instance of
+    :class:`~flask.Response`, it will be rendered with the
     :attr:`~flask_arrest.RestBlueprint.content_renderer`."""
 
     def __init__(self, *args, **kwargs):
