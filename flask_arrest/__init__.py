@@ -3,9 +3,10 @@
 from flask import Blueprint, request, abort, make_response
 from flask.helpers import locked_cached_property
 from jinja2 import PackageLoader, ChoiceLoader, Environment
-from werkzeug.exceptions import NotAcceptable
+import werkzeug
 
-from .helpers import get_best_mimetype, current_blueprint, MIMEMap
+from .helpers import get_best_mimetype, MIMEMap, register_converter
+from .resources import ResourceView
 from . import renderers
 
 __version__ = '0.3.dev2'
@@ -56,31 +57,6 @@ class ContentNegotiationMixin(object):
             abort(415)
 
 
-def serialize_response(response_data, content_type=None, renderer=None):
-    """Serializes a response using a specified renderer.
-
-    This will serialize ``response_data`` with the client's preferred
-    ``Content-type`` or generate a HTTP 406 (Not Acceptable) if no match can be
-    made.
-
-    :param response_data: Data to be serialized. Can be anything the serializer
-                          can handle.
-    :param content_type: The ``Content-type`` to serialize for.
-    :param renderer: The renderer to use. If ``None``, lookup the current
-                     blueprint's
-                     :attr:`~flask_arrest.RestBlueprint.content_renderer`.
-    :return: A :class:`~flask.Response` object."""
-    content_type = content_type or get_best_mimetype()
-
-    if not content_type:
-        # no accepted content-type. send flasks default 406, instead of raising
-        return NotAcceptable()
-
-    if not renderer:
-        renderer = current_blueprint.content_renderer
-    return renderer.render_response(response_data, content_type)
-
-
 class AbsoluteJinjaEnvMixin(object):
     """Jinja environment helper mixin.
 
@@ -107,7 +83,38 @@ class AbsoluteJinjaEnvMixin(object):
         return env
 
 
-class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin, Blueprint):
+class ResourceMountMixin(object):
+    def mount_resource(self, handler):
+        # NOTE: we are not using converters to unmarshal right now - exceptions
+        #       triggered by loading resources through converters will not
+        #       get handled by the blueprint exception handlers. this may
+        #       or may not be possible to remedy by registering application-
+        #       wide exceptions handlers
+        #
+        # create a converter for handler
+        class Converter(werkzeug.routing.BaseConverter):
+            def to_python(self, value):
+                return value
+
+            def to_url(self, obj):
+                return handler._obj_to_id()
+
+        register_converter(self, handler.singular, Converter)
+
+        # note: we use getattr instead of hasattr to allow classes to override
+        #       methods they don't want with None to hide them
+        for target, data in handler.uris.items():
+            name = ResourceView.construct_endpoint(handler, target, *data)
+
+            if getattr(handler, target, None):
+                self.add_url_rule(
+                    data[1].format(handler),
+                    view_func=ResourceView.as_view(name, handler),
+                    methods=data[0])
+
+
+class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin,
+                    ResourceMountMixin, Blueprint):
     """A REST Blueprint.
 
     Will register an errorhandler for all

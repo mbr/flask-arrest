@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from flask import current_app, request
 from werkzeug.local import LocalProxy
+from werkzeug.exceptions import NotAcceptable
 
 
 current_blueprint = LocalProxy(
@@ -24,6 +25,31 @@ def register_converter(app_or_blueprint, name, converter):
         app_or_blueprint.record_once(
             lambda state: _register_converter(state.app)
         )
+
+
+def serialize_response(response_data, content_type=None, renderer=None):
+    """Serializes a response using a specified renderer.
+
+    This will serialize ``response_data`` with the client's preferred
+    ``Content-type`` or generate a HTTP 406 (Not Acceptable) if no match can be
+    made.
+
+    :param response_data: Data to be serialized. Can be anything the serializer
+                          can handle.
+    :param content_type: The ``Content-type`` to serialize for.
+    :param renderer: The renderer to use. If ``None``, lookup the current
+                     blueprint's
+                     :attr:`~flask_arrest.RestBlueprint.content_renderer`.
+    :return: A :class:`~flask.Response` object."""
+    content_type = content_type or get_best_mimetype()
+
+    if not content_type:
+        # no accepted content-type. send flasks default 406, instead of raising
+        return NotAcceptable()
+
+    if not renderer:
+        renderer = current_blueprint.content_renderer
+    return renderer.render_response(response_data, content_type)
 
 
 def get_best_mimetype():

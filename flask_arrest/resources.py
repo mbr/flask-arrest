@@ -1,10 +1,8 @@
 from flask import request
 from flask.views import View
-import werkzeug
 from werkzeug.exceptions import NotFound
 
-from . import serialize_response
-from .helpers import register_converter
+from .helpers import serialize_response
 
 
 class ResourceView(View):
@@ -54,32 +52,3 @@ class HandlerMixin(object):
         except (ValueError, KeyError):
             raise NotFound()
         return obj
-
-
-def mount_resource(app_or_blueprint, handler):
-    # NOTE: we are not using converters to unmarshal right now - exceptions
-    #       triggered by loading resources through converters will not
-    #       get handled by the blueprint exception handlers. this may
-    #       or may not be possible to remedy by registering application-
-    #       wide exceptions handlers
-    #
-    # create a converter for handler
-    class Converter(werkzeug.routing.BaseConverter):
-        def to_python(self, value):
-            return value
-
-        def to_url(self, obj):
-            return handler._obj_to_id()
-
-    register_converter(app_or_blueprint, handler.singular, Converter)
-
-    # note: we use getattr instead of hasattr to allow classes to override
-    #       methods they don't want with None to hide them
-    for target, data in handler.uris.items():
-        name = ResourceView.construct_endpoint(handler, target, *data)
-
-        if getattr(handler, target, None):
-            app_or_blueprint.add_url_rule(
-                data[1].format(handler),
-                view_func=ResourceView.as_view(name, handler),
-                methods=data[0])
