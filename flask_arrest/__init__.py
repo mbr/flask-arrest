@@ -97,7 +97,7 @@ class ResourceMountMixin(object):
                 return value
 
             def to_url(self, obj):
-                return handler._obj_to_id()
+                return handler._obj_to_id(obj)
 
         register_converter(self, handler.singular, Converter)
 
