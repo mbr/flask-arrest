@@ -15,6 +15,8 @@
 import sys
 import os
 
+import sphinx_readable_theme
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -31,7 +33,10 @@ import os
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
 ]
+
+todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -46,7 +51,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'flask-arrest'
+project = u'Flask-arrrest'
 copyright = u'2014, Marc Brinkmann'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -101,7 +106,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'readable'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -109,7 +114,7 @@ html_theme = 'default'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = [sphinx_readable_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -229,7 +234,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'flask-arrest', u'flask-arrest Documentation',
+    ('index', 'flask-arrest', u'Flask-arrest Documentation',
      [u'Marc Brinkmann'], 1)
 ]
 
@@ -243,8 +248,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'flask-arrest', u'flask-arrest Documentation',
-   u'Marc Brinkmann', 'flask-arrest', 'One line description of project.',
+  ('index', 'flask-arrest', u'Flask-arrest Documentation',
+   u'Marc Brinkmann', 'Flask-arrest', 'One line description of project.',
    'Miscellaneous'),
 ]
 

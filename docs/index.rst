@@ -1,17 +1,47 @@
-.. flask-arrest documentation master file, created by
-   sphinx-quickstart on Tue Feb  4 16:08:16 2014.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Flask-arrest
+============
 
-Welcome to flask-arrest's documentation!
-========================================
+Flask-arrest is a `Flask <http://flask.pocoo.org>`_-extension that works hard
+to make it easy to implement `REST <http://wikipedia.org/wiki/REST>`_-APIs
+using Flask.
 
-Contents:
+.. todo:: there should be a cool code sample here
+.. .. code-block:: python
+.. 
+..    from flask_arrest import RestBlueprint, serialize_response
+.. 
+..    frontend = RestBlueprint('frontend', __name__)
+.. 
+..    @frontend.route('/greet/<name>/')
+..    def greet(name):
+..        return serialize_response({
+..            'name': name,
+..            'greeting': 'Hello, {0}'.format(name),
+..        })
+.. 
+..    from flask import Flask
+.. 
+..    app = Flask(__name__)
+..    app.register_blueprint(frontend)
+.. 
+..    app.run(debug=True)
+
+
+Flask-arrest is very modular and has three key concerns,
+*content-negotiation*, *content-serialization/-deserialization* and supporting
+*resource abstraction*. Each of these aspects can be replaced with an external
+library.
+
+There are other REST-extensions available for Flask, check `other-libraries`
+for details.
 
 .. toctree::
    :maxdepth: 2
 
+   other-libraries
 
+State of the library
+====================
 
 Indices and tables
 ==================
