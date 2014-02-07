@@ -56,6 +56,7 @@ class PluggableRenderer(Renderer):
         )
 
 
+# FIXME: bad global state
 content_renderer = PluggableRenderer()
 exception_renderer = PluggableRenderer()
 
