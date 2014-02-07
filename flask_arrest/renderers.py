@@ -8,12 +8,13 @@ class Renderer(object):
     """Basic Renderer interface.
 
     A Renderer can be asked to render an an object into a response."""
-    def render_response(self, data, content_type):
+    def render_response(self, data, content_type, status=200):
         """Render data.
 
         :param data: The data to be rendered.
         :param content_type: A string describing the desired output
                              content-type.
+        :param status: The status code for the response.
         :return: A :class:`~flask.Response` instance."""
         raise NotImplementedError
 
@@ -44,7 +45,7 @@ class PluggableRenderer(Renderer):
             return f
         return _
 
-    def render_response(self, data, content_type):
+    def render_response(self, data, content_type, status=200):
         if not content_type in self.content_funcs:
             raise KeyError('Content-type %r not registered for %r' % (
                 content_type, self
@@ -66,13 +67,13 @@ from flask_arrest.helpers import current_blueprint
 
 
 @content_renderer.renders('application/json')
-def render_json_content(data, content_type):
-    return json.dumps(data), 200, {'Content-type': content_type}
+def render_json_content(data, content_type, status):
+    return json.dumps(data), status, {'Content-type': content_type}
 
 
 @content_renderer.renders('text/plain')
-def render_text_plain_content(data, content_type):
-    return pformat(data), 200, {'Content-type': 'text/plain; charset=ascii'}
+def render_text_plain_content(data, content_type, status):
+    return pformat(data), status, {'Content-type': 'text/plain; charset=ascii'}
 
 
 @exception_renderer.renders('text/plain')
