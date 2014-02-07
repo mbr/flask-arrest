@@ -33,6 +33,7 @@ import sphinx_readable_theme
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.graphviz',
     'sphinx.ext.todo',
 ]
 
