@@ -66,7 +66,7 @@ Content-negotiation is handled automatically by any
    bp [label="ContentNeg Blueprint"]
    exc_ren [label="Exception Renderer", color=blue]
    con_ren [label="Content Renderer", color=blue]
-   exc [label="Unhandled Exception"]
+   exc [label="Unhandled Exceptions", shape=box]
    view [label="View function"]
 
    req -> bp;
@@ -74,7 +74,6 @@ Content-negotiation is handled automatically by any
    bp -> view
    view -> con_ren [label="serialize_response()", fontname="Monospace"]
    view -> exc_ren [label="raise HTTPError", fontname="Monospace"]
-   view -> exc [label="raise Exception", fontname="Monospace"]
 
    exc -> exc_ren [label="HTTP500"]
    exc_ren -> resp [label="Renders acceptable response"]
