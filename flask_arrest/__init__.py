@@ -17,31 +17,32 @@ class ContentNegotiationMixin(object):
     with the :func:`get_best_mimetype()` and :func:`serialize_response()`
     functions.
 
-    Each blueprint with this mixed in has an :attr:`incoming` and
-    :attr:`outgoing attribute, both of which are instances of
-    :class:`~flask_arrest.helpers.MIMEType` instances.
+    :attr:`~flask_arrest.ContentNegotiationMixin.incoming` types are checked
+    whenever a client sends a request with content to this blueprint. If the
+    supplied ``Content-type``-Header is not among the MIME-Types valid for
+    the specific endpoint, the request is rejected with a
+    :py:class:`~werkzeug.exceptions.UnsupportedMediaType` exception.
 
-    :attr:`incoming` types are checked whenever a client sends a request with
-    content to this blueprint (for example, with a ``POST`` request). If the
-    supplied ``Content-type``-Header is not among the MIME-Types found in
-    :attr:`incoming` for this specific endpoint, the request is rejected with a
-    HTTP 415 (Unsupported Media Type) error.
-
-    :attr:`outgoing` types supply information about which possible
-    ``Content-type``s can be sent back to the client. Renderers for data can
-    use these to find an intersection with the ``Accept``-headers the client
-    sent. Many will send an HTTP 406 (Not Acceptable) error if none of the
-    advertised types is found in the clients ``Accept``-header.
-    """
+    :attr:`~flask_arrest.ContentNegotiationMixin.outgoing` types supply
+    information about which possible mimetypes can be sent back to the client.
+    Renderers for data can use these to find an intersection with the
+    ``Accept``-headers the client sent. Many will send an HTTP 406 (Not
+    Acceptable) error if none of the advertised types is found in the clients
+    ``Accept``-header."""
 
     def __init__(self, *args, **kwargs):
         super(ContentNegotiationMixin, self).__init__(*args, **kwargs)
         self.before_request(self.__check_incoming_content_type)
 
         self.incoming = MIMEMap()
+        """a :py:class:`~flask_arrest.helpers.MIMEMap` of incoming data types.
+        The default will contain just ``application/json``."""
+
         self.incoming.add_mimetype('application/json')
 
         self.outgoing = MIMEMap()
+        """a :py:class:`~flask_arrest.helpers.MIMEMap` of outgoing data types.
+        The default will contain just ``application/json``."""
         self.outgoing.add_mimetype('application/json')
 
     def __check_incoming_content_type(self):

@@ -38,6 +38,7 @@ for details.
 .. toctree::
    :maxdepth: 2
 
+   content-negotiation
    other-libraries
 
 State of the library

@@ -30,9 +30,16 @@ def register_converter(app_or_blueprint, name, converter):
 def serialize_response(response_data, content_type=None, renderer=None):
     """Serializes a response using a specified renderer.
 
-    This will serialize ``response_data`` with the client's preferred
-    ``Content-type`` or generate a HTTP 406 (Not Acceptable) if no match can be
-    made.
+    This will serialize ``response_data`` with the specified ``content_type``,
+    using ``renderer``.
+
+    If ``content_type`` is ``None``,
+    :py:func:`~flask_arrest.helpers.get_best_mimetype` will be used to
+    determine a suitable type. If no match is found, a
+    :py:class:`~werkzeug.exceptions.NotAcceptable` exception is thrown.
+
+    If no render is supplied, use the blueprint's
+    :attr:`~flask_arrest.RestBlueprint.content_renderer`.
 
     :param response_data: Data to be serialized. Can be anything the serializer
                           can handle.
@@ -57,8 +64,8 @@ def get_best_mimetype():
     agree on. Returns ``None``, if no suitable type is found.
 
     Internally, works by querying the blueprint for its
-    :attr:`~flask_arrest.Blueprint.outgoing` attribute and comparing it with
-    the ``Accept``-headers sent by the client.."""
+    :attr:`~flask_arrest.ContentNegotiationMixin.outgoing` attribute and
+    comparing it with the ``Accept``-headers sent by the client.."""
     # find out what the client accepts
     return request.accept_mimetypes.best_match(
         current_blueprint.outgoing.get_mimetypes(request.endpoint)
@@ -66,32 +73,46 @@ def get_best_mimetype():
 
 
 class MIMEMap(object):
-    """A MIMEMap is a special datastructure that maps an endpoint to a set of
-    mimetypes. The default value of any endpoint not found is ``set([None])``.
-    A value of ``None`` will be replaced with all mimetypes set for the default
-    set of mimetypes, which are configurable by using ``None`` as the endpoint
-    name."""
+    """Special datastructure that maps an endpoint to a set of mimetypes. The
+    default set of mimetypes for any endpoint is ``{None}``.
+
+    A value of ``None`` will be replaced with all mimetypes set for the
+    special endpoint
+    :py:const:`~flask_arrest.helpers.MIMEMap.DEFAULT_ENDPOINT`.
+
+    If ``None`` is *not* included in a specific endpoints set of mimetypes, it
+    will not include the defaults mentioned above.
+    """
+
+    #: The default endpoint. Any value of ``None`` in the set of acceptable
+    #: types in other endpoints will be replaced with all types assigned to
+    #: this endpoint.
+    DEFAULT_ENDPOINT = None
+
     def __init__(self):
         self._map = defaultdict(lambda: set([None]))
 
-    def add_mimetype(self, mimetype, endpoint=None):
-        """Adds a mimetype to and endpoint."""
-        if mimetype is None and endpoint is None:
+    def add_mimetype(self, mimetype, endpoint=DEFAULT_ENDPOINT):
+        """Adds a mimetype to an endpoint."""
+        if mimetype is None and endpoint is self.DEFAULT_ENDPOINT:
             raise ValueError('Cannot add default mimetype on default.')
 
         self._map[endpoint].add(mimetype)
 
-    def set_mimetypes(self, mimetypes, endpoint=None):
+    def set_mimetypes(self, mimetypes, endpoint=DEFAULT_ENDPOINT):
         """Sets all mimetypes for an endpoint.
 
-        Note that if you exclude ``None`` from the ``mimetypes`` parameter,
-        the defaults will not be applied."""
-        if endpoint is None and None in mimetypes:
+        Note that if you exclude ``None`` from the ``mimetypes`` set, the
+        mimetypes set for
+        :py:const:`~flask_arrest.helpers.MIMEMap.DEFAULT_ENDPOINT` will not be
+        applied. This allows specifying an endpoint that does not handle all
+        of the otherwise common mimetypes."""
+        if endpoint is self.DEFAULT_ENDPOINT and None in mimetypes:
             raise ValueError('Cannot include default mimetype in default.')
 
         self._map[endpoint] = set(mimetypes)
 
-    def get_mimetypes(self, endpoint=None):
+    def get_mimetypes(self, endpoint=DEFAULT_ENDPOINT):
         """Get all mimetypes for an endpoint."""
         mimetypes = set(self._map[endpoint])
 
