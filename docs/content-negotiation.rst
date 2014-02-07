@@ -57,7 +57,8 @@ client to specify his preferred format for receiving data using `HTTP headers
 
 Content-negotiation is handled automatically by any
 :py:class:`~flask.Blueprint` that has the
-:py:class:`~flask_arrest.ContentNegotiationMixin` mixed in.
+:py:class:`~flask_arrest.ContentNegotiationMixin` mixed in. A *conceptual*
+overview can be found below:
 
 .. digraph:: foo
 
@@ -119,6 +120,27 @@ with the following function:
 
 .. autofunction:: flask_arrest.helpers.serialize_response
 
+Any data that a view might want to return is simply passed on to
+:py:func:`~flask_arrest.helpers.serialize_response` and the result returned.
+
+Renderers
+~~~~~~~~~
+
+To transform data into a representation, a
+:py:class:`~flask_arrest.renderers.Renderer` is required. Flask-arrest
+distinguishes between two renderers: Content renderers and exception renderers.
+
+Content-renderers are usually invoked by
+:py:func:`~flask_arrest.helpers.serialize_response` and turn arbitrary data
+into a content-type they can handle. If not content-renderer is supplied in the
+function call, the :py:attr:`~flask_arrest.RestBlueprint.content_renderer`
+attribute will be used.
+
+If an exception occurs, it is rendered by a different renderer:
+:py:attr:`~flask_arrest.RestBlueprint.exception_renderer`. While the interface
+is the same, it is usually not directly invoked by view code; instead any
+instance of :py:class:`~werkzeug.exceptions.HTTPException` inside a
+:py:class:`~flask_arrest.RestBlueprint` is passed to it automatically instead.
 
 Content-negotiation API reference
 ---------------------------------
@@ -127,4 +149,13 @@ Content-negotiation API reference
    :members:
 
 .. autoclass:: flask_arrest.helpers.MIMEMap
+   :members:
+
+.. autoclass:: flask_arrest.renderers.Renderer
+   :members:
+
+.. autoclass:: flask_arrest.renderers.PluggableRenderer
+   :members:
+
+.. autoclass:: flask_arrest.RestBlueprint
    :members:

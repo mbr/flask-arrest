@@ -116,18 +116,7 @@ class ResourceMountMixin(object):
 
 class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin,
                     ResourceMountMixin, Blueprint):
-    """A REST Blueprint.
-
-    Will register an errorhandler for all
-    :class:`~werkzeug.exceptions.HTTPException`s thrown, which are rendered
-    using the :attr:`~flask_arrest.RestBlueprint.exception_renderer`.
-
-    It also provides a default renderer for other facilities with
-    :attr:`~flask_arrest.RestBlueprint.content_renderer`.
-
-    Finally, everytime a view turns an object that is not an instance of
-    :class:`~flask.Response`, it will be rendered with the
-    :attr:`~flask_arrest.RestBlueprint.content_renderer`."""
+    """A REST Blueprint."""
 
     def __init__(self, *args, **kwargs):
         super(RestBlueprint, self).__init__(*args, **kwargs)
@@ -135,12 +124,22 @@ class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin,
         self.http_errorhandlers(self.__serializing_errorhandler)
 
         self.content_renderer = renderers.content_renderer
+        """The content renderer to use as the default. Usually called by
+        :py:func:`~flask_arrest.helpers.serialize_response`, should support
+        the :py:class:`~flask_arrest.renderers.Renderer` interface."""
+
         self.exception_renderer = renderers.exception_renderer
+        """The exception renderer that is used to render every
+        :py:class:`~werkzeug.exceptions.HTTPException` thrown inside this
+        blueprint. Should  support the
+        :py:class:`~flask_arrest.renderers.Renderer` interface."""
 
     def http_errorhandlers(self, f):
-        """Allow registering a function for all HTTPExceptions.
+        """Decorator for registering a function as an exception handler
+        for all instances of :py:class:`~werkzeug.exceptions.HTTPException`.
 
-        This function will go away as soon as the issue in flask is fixed."""
+        This function will go away as soon as the following
+        issue in flask is fixed: https://github.com/mitsuhiko/flask/pull/952"""
         # there's an issue and a pull request for this at
         # https://github.com/mitsuhiko/flask/pull/952
         # for now, this is a workaround
