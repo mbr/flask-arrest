@@ -43,10 +43,6 @@ for details.
 State of the library
 ====================
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+Flask-arrest is still under heavy development at this point. The API underwent
+major changes in version 0.4, but do not count on anything being nailed down
+100%. Any feedback is very welcome.
