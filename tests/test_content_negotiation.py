@@ -19,7 +19,12 @@ def api(app):
     def accepts_foo():
         return ''
 
+    @api.route('/accepts-bar/', methods=['POST'])
+    def accepts_bar():
+        return ''
+
     api.incoming.set_mimetypes(['application/foo'])
+    api.incoming.set_mimetypes(['application/bar'], 'accepts_bar')
     app.register_blueprint(api)
 
     return api
@@ -71,6 +76,36 @@ def test_get_incoming_type_with_empty_bodies(client):
     assert client.get('/accepts-foo/',
                       headers={'Content-Type': 'application/foo'}
                       ).status_code == 200
+
+
+def test_endpoint_specific_nonacceptance(client):
+    assert client.post('/accepts-bar/',
+                       headers={'Content-Type': 'application/foo'}
+                       ).status_code == 415
+
+
+def test_endpoint_specific_acceptance(client):
+    assert client.post('/accepts-bar/',
+                       headers={'Content-Type': 'application/bar'}
+                       ).status_code == 200
+
+
+def test_mime_decorators(api):
+    the_types = {'only/type', 'another/type'}
+
+    @api.incoming.accepts('my/type')
+    def foo():
+        pass
+
+    @api.incoming.accepts_only(the_types)
+    def bar():
+        pass
+
+    assert 'my/type' in api.incoming.get_mimetypes('foo')
+    assert 'my/type' not in api.incoming.get_mimetypes()
+
+    assert the_types == api.incoming.get_mimetypes('bar')
+    assert the_types != api.incoming.get_mimetypes()
 
 
 # simple client

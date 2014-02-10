@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from flask import current_app, request
+from flask.helpers import _endpoint_from_view_func
 from werkzeug.local import LocalProxy
 from werkzeug.exceptions import NotAcceptable
 
@@ -121,3 +122,15 @@ class MIMEMap(object):
             mimetypes.remove(None)
 
         return mimetypes
+
+    def accepts(self, extra_type):
+        def _(f):
+            self.add_mimetype(extra_type, _endpoint_from_view_func(f))
+            return f
+        return _
+
+    def accepts_only(self, only_types):
+        def _(f):
+            self.set_mimetypes(only_types, _endpoint_from_view_func(f))
+            return f
+        return _
