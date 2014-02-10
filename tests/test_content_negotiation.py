@@ -93,11 +93,11 @@ def test_endpoint_specific_acceptance(client):
 def test_mime_decorators(api):
     the_types = {'only/type', 'another/type'}
 
-    @api.incoming.accepts('my/type')
+    @api.incoming.add('my/type')
     def foo():
         pass
 
-    @api.incoming.accepts_only(the_types)
+    @api.incoming.only(the_types)
     def bar():
         pass
 
