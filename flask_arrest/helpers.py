@@ -83,6 +83,9 @@ class MIMEMap(object):
 
     If ``None`` is *not* included in a specific endpoints set of mimetypes, it
     will not include the defaults mentioned above.
+
+    Note that endpoint names should usually be added without the
+    Blueprint-prefix (i.e. "index" instead of "api.index").
     """
 
     #: The default endpoint. Any value of ``None`` in the set of acceptable
