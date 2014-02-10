@@ -53,7 +53,13 @@ class ContentNegotiationMixin(object):
         if not request.content_type and not (request.data or request.form):
             return  # no content, no problem
 
-        accepted = self.incoming.get_mimetypes(request.endpoint)
+        # strip the blueprint prefix
+        prefix = self.name + '.'
+        if request.endpoint.startswith(prefix):
+            endpoint_name = request.endpoint[len(prefix):]
+        else:
+            endpoint_name = request.endpoint
+        accepted = self.incoming.get_mimetypes(endpoint_name)
         if not request.content_type in accepted:
             abort(415)
 
