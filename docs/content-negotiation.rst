@@ -48,12 +48,17 @@ A simple example
        # (see api.outgoing) will be delivered
        return serialize_response(temps)
 
-The (incomplete) application above supports one incoming mimetype and two
+The (incomplete) application above supports one incoming mimetype [1]_ and two
 outgoing ones (``application/json`` is the overridable default in both cases,
 see :py:attr:`~flask_arrest.ContentNegotiationMixin.incoming` and
 :py:attr:`~flask_arrest.ContentNegotiationMixin.outgoing`). This allows the
 client to specify his preferred format for receiving data using `HTTP headers
 <https://en.wikipedia.org/wiki/List_of_HTTP_headers>`_.
+
+.. [1] In a real application, it would be a `good idea <http://
+       codebetter.com/sebastienlambla/2011/02/01/minting-new-internet-media
+       -type-identifiers/>`_ to use a vendor-specific mimetype, such as
+       ``application/vnd.temperatureapp+json``.
 
 Content-negotiation is handled automatically by any
 :py:class:`~flask.Blueprint` that has the
