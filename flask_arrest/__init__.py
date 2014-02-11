@@ -90,6 +90,7 @@ class AbsoluteJinjaEnvMixin(object):
         return env
 
 
+# FIXME: this may or may not be removed
 class ResourceMountMixin(object):
     def mount_resource(self, handler):
         # NOTE: we are not using converters to unmarshal right now - exceptions
