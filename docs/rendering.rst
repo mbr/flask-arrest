@@ -1,6 +1,26 @@
 Renderers
 =========
 
+JSON rendering helpers
+----------------------
+
+.. automodule:: flask_arrest.json
+   :members:
+
+Quick use
+~~~~~~~~~
+.. data:: flask_arrest.json.json_enc
+
+   An instance of :class:`~flask_arrest.json.ExtendedJSONEncoder`.
+
+Similar to :func:`json.dumps`, the extended encoding capabilities can be used
+like this::
+
+    from flask_arrest.json import json_enc
+
+    json_enc.dumps('foo')
+
+
 Rendering and content negotiation
 ---------------------------------
 

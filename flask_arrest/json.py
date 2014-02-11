@@ -1,3 +1,15 @@
+"""JSON-rendering helpers.
+
+This module is not dependent on anything else inside Flask-arrest and may be
+factored out into its own library at some point.
+
+It provides mixins for the stdlib :class:`json.JSONEncoder` class, adding
+serialization methods for other object types, such as
+:class:`~datetime.datetime` objects or iterables.
+
+All these are ready to use by using :data:`~flask_arrest.json.json_enc`.
+"""
+
 from __future__ import absolute_import
 
 import datetime
@@ -35,7 +47,7 @@ class JSONIterableMixin(object):
 
 class JSONToDictMixin(object):
     """A mixin for JSONEncoders, encoding any object with a to_dict() method
-    by call this method and encoding the return value."""
+    by calling that method and encoding the return value."""
     def default(self, o):
         if hasattr(o, 'to_dict'):
             return o.to_dict()
@@ -50,4 +62,7 @@ class ExtendedJSONEncoder(JSONDateTimeMixin,
 
 
 json_enc = ExtendedJSONEncoder()
+
+
+# FIXME: this needs to be able to at least parse timestamps in the future
 json_dec = json.JSONDecoder()
