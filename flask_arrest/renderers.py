@@ -1,3 +1,4 @@
+from copy import deepcopy
 from flask import make_response, current_app
 
 # encoding to be used when sending text/plain
@@ -55,10 +56,13 @@ class PluggableRenderer(Renderer):
             self.content_funcs[content_type](data, content_type)
         )
 
+    def copy(self):
+        return deepcopy(self)
 
-# FIXME: bad global state
+
 content_renderer = PluggableRenderer()
 exception_renderer = PluggableRenderer()
+
 
 import json
 from pprint import pformat

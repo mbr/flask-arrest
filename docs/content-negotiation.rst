@@ -164,3 +164,17 @@ Content-negotiation API reference
 
 .. autoclass:: flask_arrest.RestBlueprint
    :members:
+
+.. data:: flask_arrest.renderers.content_renderer
+
+    The default content rendererer, includes preset renderers for
+    ``application/json`` and ``text/plain``. JSON data is handled by a simple
+    :func:`json.dumps`, while text-rendering is performed by
+    :func:`pprint.pformat`. See the source code for details.
+
+.. data:: flask_arrest.renderers.exception_renderer
+
+    The default exception renderer, renders exception as ``application/json``,
+    ``application/problem+json`` (the `Problem Details for HTTP APIs
+    <https://tools.ietf.org/html/draft-nottingham-http-problem>`_-format),
+    ``text/plain`` and ``text/html``.

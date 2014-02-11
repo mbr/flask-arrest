@@ -129,12 +129,16 @@ class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin,
 
         self.http_errorhandlers(self.__serializing_errorhandler)
 
-        self.content_renderer = renderers.content_renderer
+        self.content_renderer = renderers.content_renderer.copy()
         """The content renderer to use as the default. Usually called by
         :py:func:`~flask_arrest.helpers.serialize_response`, should support
-        the :py:class:`~flask_arrest.renderers.Renderer` interface."""
+        the :py:class:`~flask_arrest.renderers.Renderer` interface.
 
-        self.exception_renderer = renderers.exception_renderer
+        Per default, a copy of
+        :py:attr:`~flask_arrest.renderers.content_renderer` is used as the
+        initial value."""
+
+        self.exception_renderer = renderers.exception_renderer.copy()
         """The exception renderer that is used to render every
         :py:class:`~werkzeug.exceptions.HTTPException` thrown inside this
         blueprint. Should  support the
