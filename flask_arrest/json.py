@@ -33,8 +33,18 @@ class JSONIterableMixin(object):
         return super(JSONIterableMixin, self).default(o)
 
 
+class JSONToDictMixin(object):
+    """A mixin for JSONEncoders, encoding any object with a to_dict() method
+    by call this method and encoding the return value."""
+    def default(self, o):
+        if hasattr(o, 'to_dict'):
+            return o.to_dict()
+        return super(JSONToDictMixin, self).default(o)
+
+
 class RESTJSONEncoder(JSONDateTimeMixin,
                       JSONIterableMixin,
+                      JSONToDictMixin,
                       json.JSONEncoder, object):
     pass
 
