@@ -62,30 +62,7 @@ client to specify his preferred format for receiving data using `HTTP headers
 
 Content-negotiation is handled automatically by any
 :py:class:`~flask.Blueprint` that has the
-:py:class:`~flask_arrest.ContentNegotiationMixin` mixed in. A *conceptual*
-overview can be found below:
-
-.. digraph:: foo
-
-   req [shape=box, style=filled, label="Incoming Request"];
-   resp [shape=box, style=filled, label="Outgoing Response"];
-   bp [label="ContentNeg Blueprint"]
-   exc_ren [label="Exception Renderer", color=blue]
-   con_ren [label="Content Renderer", color=blue]
-   exc [label="Unhandled Exceptions", shape=box]
-   view [label="View function"]
-
-   req -> bp;
-   bp -> exc_ren [label="UnsupportMediaType?"]
-   bp -> view
-   view -> con_ren [label="serialize_response()", fontname="Monospace"]
-   view -> exc_ren [label="raise HTTPError", fontname="Monospace"]
-
-   exc -> exc_ren [label="HTTP500"]
-   exc_ren -> resp [label="Renders acceptable response"]
-   exc_ren -> resp [label="Falls back to HTML/HTTP415", color=red,
-                    fontcolor=red]
-   con_ren -> resp [label="Renders acceptable response"]
+:py:class:`~flask_arrest.ContentNegotiationMixin` mixed in.
 
 
 Incoming content
@@ -114,7 +91,7 @@ Afterwards, the requests is processed as normal and passed on to a view.
 Outgoing content
 ----------------
 
-Flask-arrest does not alter response automatically, but provides facilities to
+Flask-arrest does not alter responses automatically, but provides facilities to
 do so. These are concentrated in the following two helper functions:
 
 .. autofunction:: flask_arrest.helpers.get_best_mimetype
@@ -128,24 +105,6 @@ with the following function:
 Any data that a view might want to return is simply passed on to
 :py:func:`~flask_arrest.helpers.serialize_response` and the result returned.
 
-Renderers
-~~~~~~~~~
-
-To transform data into a representation, a
-:py:class:`~flask_arrest.renderers.Renderer` is required. Flask-arrest
-distinguishes between two renderers: Content renderers and exception renderers.
-
-Content-renderers are usually invoked by
-:py:func:`~flask_arrest.helpers.serialize_response` and turn arbitrary data
-into a content-type they can handle. If not content-renderer is supplied in the
-function call, the :py:attr:`~flask_arrest.RestBlueprint.content_renderer`
-attribute will be used.
-
-If an exception occurs, it is rendered by a different renderer:
-:py:attr:`~flask_arrest.RestBlueprint.exception_renderer`. While the interface
-is the same, it is usually not directly invoked by view code; instead any
-instance of :py:class:`~werkzeug.exceptions.HTTPException` inside a
-:py:class:`~flask_arrest.RestBlueprint` is passed to it automatically instead.
 
 Content-negotiation API reference
 ---------------------------------
@@ -156,25 +115,7 @@ Content-negotiation API reference
 .. autoclass:: flask_arrest.helpers.MIMEMap
    :members:
 
-.. autoclass:: flask_arrest.renderers.Renderer
-   :members:
-
-.. autoclass:: flask_arrest.renderers.PluggableRenderer
-   :members:
+.. autofunc:: flask_arrest.helpers.serialize_response
 
 .. autoclass:: flask_arrest.RestBlueprint
    :members:
-
-.. data:: flask_arrest.renderers.content_renderer
-
-    The default content rendererer, includes preset renderers for
-    ``application/json`` and ``text/plain``. JSON data is handled by a simple
-    :func:`json.dumps`, while text-rendering is performed by
-    :func:`pprint.pformat`. See the source code for details.
-
-.. data:: flask_arrest.renderers.exception_renderer
-
-    The default exception renderer, renders exception as ``application/json``,
-    ``application/problem+json`` (the `Problem Details for HTTP APIs
-    <https://tools.ietf.org/html/draft-nottingham-http-problem>`_-format),
-    ``text/plain`` and ``text/html``.
