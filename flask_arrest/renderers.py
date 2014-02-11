@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from copy import deepcopy
 from flask import make_response, current_app
 
