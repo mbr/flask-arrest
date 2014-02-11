@@ -42,12 +42,12 @@ class JSONToDictMixin(object):
         return super(JSONToDictMixin, self).default(o)
 
 
-class RESTJSONEncoder(JSONDateTimeMixin,
-                      JSONIterableMixin,
-                      JSONToDictMixin,
-                      json.JSONEncoder, object):
+class ExtendedJSONEncoder(JSONDateTimeMixin,
+                          JSONIterableMixin,
+                          JSONToDictMixin,
+                          json.JSONEncoder, object):
     pass
 
 
-json_enc = RESTJSONEncoder()
+json_enc = ExtendedJSONEncoder()
 json_dec = json.JSONDecoder()
