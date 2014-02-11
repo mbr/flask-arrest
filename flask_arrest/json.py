@@ -4,7 +4,6 @@ import datetime
 import json
 
 import times
-from werkzeug.exceptions import HTTPException
 
 
 class JSONDateTimeMixin(object):
@@ -34,30 +33,7 @@ class JSONIterableMixin(object):
         return super(JSONIterableMixin, self).default(o)
 
 
-class JSONHTTPErrorMixin(object):
-    """A mixin for JSONEncoders, encoding
-    :class:`~werkzeug.exceptions.HTTPException` instances.
-
-    The format is similiar to::
-
-        {
-          "error": {"description": "You need to login",
-                    "code": 401}
-        }
-    """
-    def default(self, o):
-        if isinstance(o, HTTPException):
-            return {
-                'error': {
-                    'description': o.description,
-                    'code': o.code,
-                }
-            }
-        super(JSONHTTPErrorMixin, self).default(o)
-
-
 class RESTJSONEncoder(JSONDateTimeMixin,
-                      JSONHTTPErrorMixin,
                       JSONIterableMixin,
                       json.JSONEncoder, object):
     pass
