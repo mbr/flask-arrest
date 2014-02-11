@@ -9,7 +9,7 @@ from .helpers import get_best_mimetype, MIMEMap, register_converter
 from .resources import ResourceView
 from . import renderers
 
-__version__ = '0.3.dev2'
+__version__ = '0.4'
 
 
 class ContentNegotiationMixin(object):
