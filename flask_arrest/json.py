@@ -55,9 +55,19 @@ class JSONToDictMixin(object):
         return super(JSONToDictMixin, self).default(o)
 
 
+class JSONStringifyMixin(object):
+    """A mixing for JSONEncoders, encoding any object that has a __str__
+    method with the return value of said function."""
+    def default(self, o):
+        if hasattr(o, '__str__'):
+            return str(o)
+        return super(JSONStringifyMixin, self).default(o)
+
+
 class ExtendedJSONEncoder(JSONDateTimeMixin,
                           JSONIterableMixin,
                           JSONToDictMixin,
+                          JSONStringifyMixin,
                           json.JSONEncoder, object):
     pass
 
