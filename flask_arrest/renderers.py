@@ -55,7 +55,7 @@ class PluggableRenderer(Renderer):
             ))
 
         return make_response(
-            self.content_funcs[content_type](data, content_type)
+            self.content_funcs[content_type](data, content_type, status)
         )
 
     def copy(self):

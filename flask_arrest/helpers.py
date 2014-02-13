@@ -28,7 +28,8 @@ def register_converter(app_or_blueprint, name, converter):
         )
 
 
-def serialize_response(response_data, content_type=None, renderer=None):
+def serialize_response(response_data, content_type=None, status=200,
+                       renderer=None):
     """Serializes a response using a specified renderer.
 
     This will serialize ``response_data`` with the specified ``content_type``,
@@ -42,9 +43,10 @@ def serialize_response(response_data, content_type=None, renderer=None):
     If no render is supplied, use the blueprint's
     :attr:`~flask_arrest.RestBlueprint.content_renderer`.
 
-    :param response_data: Data to be serialized. Can be anything the serializer
+    :param response_data: Data to be serialized. Can be anything the renderer
                           can handle.
     :param content_type: The ``Content-type`` to serialize for.
+    :param status The response status to pass on to the renderer.
     :param renderer: The renderer to use. If ``None``, lookup the current
                      blueprint's
                      :attr:`~flask_arrest.RestBlueprint.content_renderer`.
@@ -57,7 +59,7 @@ def serialize_response(response_data, content_type=None, renderer=None):
 
     if not renderer:
         renderer = current_blueprint.content_renderer
-    return renderer.render_response(response_data, content_type)
+    return renderer.render_response(response_data, content_type, status)
 
 
 def get_best_mimetype():
