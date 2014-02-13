@@ -84,7 +84,7 @@ def render_text_plain_content(data, content_type, status):
 
 
 @exception_renderer.renders('text/plain')
-def render_text_plain_exception(exc, content_type):
+def render_text_plain_exception(exc, content_type, status):
     # renders an exception as ascii text
     text = exc.description.encode(TEXT_PLAIN_ENCODING)
 
@@ -92,7 +92,7 @@ def render_text_plain_exception(exc, content_type):
 
 
 @exception_renderer.renders('text/html')
-def text_html(exc, content_type):
+def text_html(exc, content_type, status):
     tpl_name = current_app.config.get('EXCEPTION_TEMPLATE_TEXT_HTML',
                                       'exception.html')
     tpl = current_blueprint.absolute_jinja_env.get_or_select_template(tpl_name)
@@ -103,7 +103,7 @@ def text_html(exc, content_type):
 
 @exception_renderer.renders('application/problem+json')
 @exception_renderer.renders('application/json')
-def application_problem_json(exc, content_type):
+def application_problem_json(exc, content_type, status):
     data = {
         'type': ('https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#%d'
                  % exc.code),
