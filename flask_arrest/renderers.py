@@ -67,6 +67,7 @@ exception_renderer = PluggableRenderer()
 
 
 import json
+from . import json as extjson
 from pprint import pformat
 
 from flask_arrest.helpers import current_blueprint
@@ -74,7 +75,7 @@ from flask_arrest.helpers import current_blueprint
 
 @content_renderer.renders('application/json')
 def render_json_content(data, content_type, status):
-    return json.dumps(data), status, {'Content-type': content_type}
+    return extjson.dumps(data), status, {'Content-type': content_type}
 
 
 @content_renderer.renders('text/plain')

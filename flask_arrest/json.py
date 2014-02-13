@@ -13,6 +13,7 @@ All these are ready to use by using :data:`~flask_arrest.json.json_enc`.
 from __future__ import absolute_import
 
 import datetime
+import functools
 import json
 
 import times
@@ -61,8 +62,4 @@ class ExtendedJSONEncoder(JSONDateTimeMixin,
     pass
 
 
-json_enc = ExtendedJSONEncoder()
-
-
-# FIXME: this needs to be able to at least parse timestamps in the future
-json_dec = json.JSONDecoder()
+dumps = functools.partial(json.dumps, cls=ExtendedJSONEncoder)

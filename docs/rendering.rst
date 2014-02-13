@@ -9,16 +9,12 @@ JSON rendering helpers
 
 Quick use
 ~~~~~~~~~
-.. data:: flask_arrest.json.json_enc
-
-   An instance of :class:`~flask_arrest.json.ExtendedJSONEncoder`.
-
 Similar to :func:`json.dumps`, the extended encoding capabilities can be used
 like this::
 
-    from flask_arrest.json import json_enc
+    import flask_arrest.json as extjson
 
-    json_enc.dumps('foo')
+    extjson.dumps('foo')
 
 
 Rendering and content negotiation
@@ -54,7 +50,7 @@ Rendering API reference
 
     The default content rendererer, includes preset renderers for
     ``application/json`` and ``text/plain``. JSON data is handled by a simple
-    :func:`json.dumps`, while text-rendering is performed by
+    :func:`flask_arrest.json.dumps`, while text-rendering is performed by
     :func:`pprint.pformat`. See the source code for details.
 
 .. data:: flask_arrest.renderers.exception_renderer
