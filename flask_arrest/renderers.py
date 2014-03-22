@@ -1,7 +1,13 @@
 from __future__ import absolute_import
 
 from copy import deepcopy
+import json
+from pprint import pformat
+
 from flask import make_response, current_app
+from .helpers import current_blueprint
+import jsonext
+
 
 # encoding to be used when sending text/plain
 TEXT_PLAIN_ENCODING = 'utf8'
@@ -66,16 +72,10 @@ content_renderer = PluggableRenderer()
 exception_renderer = PluggableRenderer()
 
 
-import json
-from . import json as extjson
-from pprint import pformat
-
-from flask_arrest.helpers import current_blueprint
-
 
 @content_renderer.renders('application/json')
 def render_json_content(data, content_type, status):
-    return extjson.dumps(data), status, {'Content-type': content_type}
+    return jsonext.dumps(data), status, {'Content-type': content_type}
 
 
 @content_renderer.renders('text/plain')

@@ -20,6 +20,6 @@ setup(
     url='http://github.com/mbr/Flask-arrest',
     license='MIT',
     packages=find_packages(exclude=['test']),
-    install_requires=['Flask', 'werkzeug', 'times'],
+    install_requires=['Flask', 'werkzeug', 'jsonext'],
     tests_require=['pytest'],
 )
