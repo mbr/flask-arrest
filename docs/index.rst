@@ -8,7 +8,8 @@ using Flask.
 .. todo:: there should be a cool code sample here
 .. .. code-block:: python
 ..
-..    from flask_arrest import RestBlueprint, serialize_response
+..    from flask_arrest import RestBlueprint
+..    from flask_arrest.helpers import serialize_response
 ..
 ..    frontend = RestBlueprint('frontend', __name__)
 ..
