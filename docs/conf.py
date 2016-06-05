@@ -5,7 +5,8 @@ copyright = u'2016, Marc Brinkmann'
 version = '0.5.0'
 release = '0.5.0.dev1'
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'alabaster']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
+              'sphinx.ext.graphviz', 'sphinx.ext.todo', 'alabaster']
 source_suffix = '.rst'
 master_doc = 'index'
 exclude_patterns = ['_build']
