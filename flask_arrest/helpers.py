@@ -45,7 +45,7 @@ def serialize_response(response_data,
     :param response_data: Data to be serialized. Can be anything the renderer
                           can handle.
     :param content_type: The ``Content-type`` to serialize for.
-    :param status The response status to pass on to the renderer.
+    :param status: The response status to pass on to the renderer.
     :param renderer: The renderer to use. If ``None``, lookup the current
                      blueprint's
                      :attr:`~flask_arrest.RestBlueprint.content_renderer`.
