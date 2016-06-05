@@ -9,7 +9,7 @@ from .helpers import get_best_mimetype, MIMEMap, register_converter
 from .resources import ResourceView
 from . import renderers
 
-__version__ = '0.4.5.dev1'
+__version__ = '0.5.0.dev1'
 
 
 class ContentNegotiationMixin(object):
@@ -47,8 +47,9 @@ class ContentNegotiationMixin(object):
 
     def __check_incoming_content_type(self):
         if not request.content_type and (request.data or request.form):
-            abort(415)  # client needs to send a content-type, if he sends
-                        # content
+            # client needs to send a content-type, if he sends
+            # content
+            abort(415)
 
         if not request.content_type and not (request.data or request.form):
             return  # no content, no problem
@@ -170,8 +171,6 @@ class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin,
             # we found no acceptable content-type to render the exception
             # return nothing but the code
             code = getattr(exc, 'code', 500)
-            return make_response(
-                '', code, {}
-            )
+            return make_response('', code, {})
 
         return self.exception_renderer.render_response(exc, content_type)
