@@ -115,7 +115,7 @@ Content-negotiation API reference
 .. autoclass:: flask_arrest.helpers.MIMEMap
    :members:
 
-.. autofunc:: flask_arrest.helpers.serialize_response
+.. autofunction:: flask_arrest.helpers.serialize_response
 
 .. autoclass:: flask_arrest.RestBlueprint
    :members:
