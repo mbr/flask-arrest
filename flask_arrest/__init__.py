@@ -158,11 +158,12 @@ class RestBlueprint(AbsoluteJinjaEnvMixin, ContentNegotiationMixin,
         # for now, this is a workaround
         # ideally, we would just myblueprint.errorhandler(HTTPException)(f)
 
-        for i in range(0, 600):
-            if i != 500:
-                # AssertionError: It is currently not possible to register a
-                # 500 internal server error on a per-blueprint level.
-                self.errorhandler(i)(f)
+        # as of Flask 0.11, the old code threw an exception upon construction,
+        # however it seems to be still not possible to register an exception
+        # for the base class, because http error codes seem to be checked
+        # numerically instead of by type
+        for i in werkzeug.exceptions.default_exceptions.keys():
+            self.register_error_handler(i, f)
         return f
 
     def __serializing_errorhandler(self, exc):
