@@ -35,4 +35,5 @@ html_sidebars = {
 
 intersphinx_mapping = {'http://docs.python.org/': None,
                        'http://flask-sqlalchemy.pocoo.org/': None,
-                       'http://flask.pocoo.org/docs/': None, }
+                       'http://flask.pocoo.org/docs/': None,
+                       'http://werkzeug.pocoo.org/docs/': None, }
