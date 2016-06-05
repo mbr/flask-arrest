@@ -19,6 +19,8 @@ setup(name='Flask-arrest',
       url='http://github.com/mbr/Flask-arrest',
       license='MIT',
       packages=find_packages(exclude=['test']),
+      include_package_data=True,
+      zip_safe=False,
       install_requires=['Flask', 'werkzeug', 'jsonext'],
       tests_require=['pytest'],
       classifiers=[
