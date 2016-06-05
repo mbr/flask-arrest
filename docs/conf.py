@@ -3,7 +3,7 @@
 project = u'Flask-Arrest'
 copyright = u'2016, Marc Brinkmann'
 version = '0.5.0'
-release = '0.5.0.dev1'
+release = '0.5.0'
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
               'sphinx.ext.graphviz', 'sphinx.ext.todo', 'alabaster']
