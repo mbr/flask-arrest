@@ -33,5 +33,5 @@ html_sidebars = {
 }
 
 intersphinx_mapping = {'http://docs.python.org/': None,
-                       'http://pythonhosted.org/Flask-SQLAlchemy/': None,
+                       'http://flask-sqlalchemy.pocoo.org/': None,
                        'http://flask.pocoo.org/docs/': None, }

@@ -1,12 +1,6 @@
 Renderers
 =========
 
-JSON rendering helpers
-----------------------
-
-.. automodule:: flask_arrest.json
-   :members:
-
 Quick use
 ~~~~~~~~~
 Similar to :func:`json.dumps`, the extended encoding capabilities can be used

@@ -5,10 +5,8 @@ from flask.helpers import _endpoint_from_view_func
 from werkzeug.local import LocalProxy
 from werkzeug.exceptions import NotAcceptable
 
-
 current_blueprint = LocalProxy(
-    lambda: current_app.blueprints[request.blueprint]
-)
+    lambda: current_app.blueprints[request.blueprint])
 
 
 def register_converter(app_or_blueprint, name, converter):
@@ -24,11 +22,12 @@ def register_converter(app_or_blueprint, name, converter):
         _register_converter(app_or_blueprint)
     else:
         app_or_blueprint.record_once(
-            lambda state: _register_converter(state.app)
-        )
+            lambda state: _register_converter(state.app))
 
 
-def serialize_response(response_data, content_type=None, status=200,
+def serialize_response(response_data,
+                       content_type=None,
+                       status=200,
                        renderer=None):
     """Serializes a response using a specified renderer.
 
@@ -50,7 +49,9 @@ def serialize_response(response_data, content_type=None, status=200,
     :param renderer: The renderer to use. If ``None``, lookup the current
                      blueprint's
                      :attr:`~flask_arrest.RestBlueprint.content_renderer`.
-    :return: A :class:`~flask.Response` object."""
+    :return: A :class:`~flask.Response` object.
+
+    """
     content_type = content_type or get_best_mimetype()
 
     if not content_type:
@@ -71,8 +72,7 @@ def get_best_mimetype():
     comparing it with the ``Accept``-headers sent by the client.."""
     # find out what the client accepts
     return request.accept_mimetypes.best_match(
-        current_blueprint.outgoing.get_mimetypes(request.endpoint)
-    )
+        current_blueprint.outgoing.get_mimetypes(request.endpoint))
 
 
 class MIMEMap(object):
@@ -132,10 +132,12 @@ class MIMEMap(object):
         def _(f):
             self.add_mimetype(extra_type, _endpoint_from_view_func(f))
             return f
+
         return _
 
     def only(self, only_types):
         def _(f):
             self.set_mimetypes(only_types, _endpoint_from_view_func(f))
             return f
+
         return _
