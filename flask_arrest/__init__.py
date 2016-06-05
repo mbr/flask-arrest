@@ -61,7 +61,7 @@ class ContentNegotiationMixin(object):
         else:
             endpoint_name = request.endpoint
         accepted = self.incoming.get_mimetypes(endpoint_name)
-        if not request.content_type in accepted:
+        if request.content_type not in accepted:
             abort(415)
 
 
@@ -72,6 +72,7 @@ class AbsoluteJinjaEnvMixin(object):
     blueprint (when deriving from a blueprint, normally the template_path will
     be overridden).
     """
+
     @locked_cached_property
     def _absolute_jinja_loader(self):
         # we override this so we can add our own template path as well as the
