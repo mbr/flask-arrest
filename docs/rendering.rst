@@ -44,7 +44,7 @@ Rendering API reference
 
     The default content rendererer, includes preset renderers for
     ``application/json`` and ``text/plain``. JSON data is handled by a simple
-    :func:`flask_arrest.json.dumps`, while text-rendering is performed by
+    `json.dumps`, while text-rendering is performed by
     :func:`pprint.pformat`. See the source code for details.
 
 .. data:: flask_arrest.renderers.exception_renderer

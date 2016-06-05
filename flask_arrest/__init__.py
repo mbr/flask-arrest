@@ -14,7 +14,7 @@ __version__ = '0.5.0.dev1'
 
 class ContentNegotiationMixin(object):
     """A blueprint mixin that supports content negotiation. Used in conjunction
-    with the :func:`.get_best_mimetype()` and :func:`serialize_response()`
+    with the :func:`.get_best_mimetype()` and :func:`.serialize_response()`
     functions.
 
     :attr:`~flask_arrest.ContentNegotiationMixin.incoming` types are checked
