@@ -59,7 +59,7 @@ def test_html_exception(client):
 
     assert resp.status_code == 403
     assert resp.content_type.startswith('text/html')
-    assert '<html' in resp.data
+    assert b'<html' in resp.data
 
 
 def test_json_exception(client):
@@ -69,7 +69,7 @@ def test_json_exception(client):
 
     assert resp.status_code == 403
     assert re.match('application/(.*\+)json', resp.content_type)
-    data = json.loads(resp.data)
+    data = json.loads(resp.data.decode('utf8'))
 
     assert 'type' in data
     assert 'title' in data
