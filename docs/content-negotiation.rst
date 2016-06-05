@@ -97,13 +97,15 @@ do so. These are concentrated in the following two helper functions:
 .. autofunction:: flask_arrest.helpers.get_best_mimetype
 
 Normally, you will not need to call
-:py:func:`~flask_arrest.helpers.get_best_mimetype` directly, instead interact
+:py:function:`~flask_arrest.helpers.get_best_mimetype` directly, instead
+interact
 with the following function:
 
 .. autofunction:: flask_arrest.helpers.serialize_response
 
 Any data that a view might want to return is simply passed on to
-:py:func:`~flask_arrest.helpers.serialize_response` and the result returned.
+:py:function:`~flask_arrest.helpers.serialize_response` and the result
+returned.
 
 
 Content-negotiation API reference
