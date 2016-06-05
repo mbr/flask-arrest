@@ -20,4 +20,8 @@ setup(name='Flask-arrest',
       license='MIT',
       packages=find_packages(exclude=['test']),
       install_requires=['Flask', 'werkzeug', 'jsonext'],
-      tests_require=['pytest'], )
+      tests_require=['pytest'],
+      classifiers=[
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 3',
+      ])
