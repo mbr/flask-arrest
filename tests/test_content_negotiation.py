@@ -56,7 +56,11 @@ def client(app, api):
 
 
 def test_no_incoming_type(client):
-    assert client.post('/accepts-foo/').status_code == 415
+    # new in flask 0.11: an empty post request is fine without any content-type
+    assert client.post('/accepts-foo/').status_code == 200
+
+    # ...but as soon as there is any content, we want a proper header
+    assert client.post('/accepts-foo/', data='something').status_code == 415
 
 
 def test_acceptable_incoming_type(client):
